@@ -1,3 +1,5 @@
+// -*- js2-basic-offset: 2; -*-
+
 'use strict';
 
 var gaze = require('../lib/gaze.js');
@@ -31,6 +33,15 @@ exports.watch = {
     cleanUp(done);
   },
   tearDown: cleanUp,
+  testnotexists: function(test) {
+    test.expect(0);
+    fs.mkdirSync(path.resolve(__dirname, 'fixtures', 'new_dir'));
+    fs.symlinkSync(path.resolve(__dirname, 'fixtures', 'not-exists.js'), path.resolve(__dirname, 'fixtures', 'new_dir', 'not-exists-symlink.js'));
+    gaze('**/*', function() {
+      this.close();
+      test.done();
+    });
+  },
   remove: function(test) {
     test.expect(2);
     gaze('**/*', function() {
@@ -274,7 +285,7 @@ exports.watch = {
 
 
       fs.mkdirSync('new_dir'); //fs.mkdirSync([folder]) seems to behave differently than grunt.file.write('[folder]/[file]')
-      
+
 
       watcher.on('end', test.done);
     });
